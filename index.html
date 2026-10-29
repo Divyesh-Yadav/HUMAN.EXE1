@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>human.exe — Personality Quiz</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Sansita:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * {
+      font-family: 'Sansita', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .cinema-side {
+      position: fixed;
+      top: 50%;
+      width: 180px;
+      transform: translateY(-50%);
+      z-index: -1;
+      opacity: 0.9;
+    }
+
+    .cinema-side img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .cinema-side.left {
+      left: 25px;
+    }
+
+    .cinema-side.right {
+      right: 25px;
+    }
+
+    @media (max-width: 1100px) {
+      .cinema-side {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a class="logo" href="#">human.exe</a>
+    <span>JUST FOR BOBA 😋!!!!!</span>
+  </header>
+
+  <div class="cinema-side left">
+    <img src="absolute cinema.png" alt="Absolute cinema meme">
+  </div>
+
+  <div class="cinema-side right">
+    <img src="absolute cinema.png" alt="Absolute cinema meme">
+  </div>
+
+  <main>
+
+    <h1>What kind of human are you?</h1>
+
+    <p class="description">
+      Answer these questions to find out what kind of human breed u have.
+    </p>
+
+    <section class="card" id="quiz">
+      <div class="emoji" id="emoji"></div>
+
+      <p class="question-count" id="progress"></p>
+
+      <h2 id="question">Ready to find out?</h2>
+
+      <p id="subtitle">
+        Five questions. One result. That's it.
+      </p>
+
+      <div id="answers"></div>
+
+      <button id="startBtn" onclick="startQuiz()">
+        Start the quiz →
+      </button>
+
+      <button id="restartBtn" onclick="startQuiz()" hidden>
+        Try again ↻
+      </button>
+    </section>
+
+    <p class="footer">Made by Divyesh.</p>
+
+  </main>
+
+  <script>
+    const questions = [
+      {
+        question: "It's Saturday. What's your plan?",
+        answers: [
+          "Go out with friends",
+          "Stay home and relax",
+          "Try something new",
+          "See where the day goes"
+        ]
+      },
+      {
+        question: "Your group has a project. You...",
+        answers: [
+          "Organize everything",
+          "Come up with ideas",
+          "Help everyone out",
+          "Wait for instructions"
+        ]
+      },
+      {
+        question: "Pick your ideal superpower.",
+        answers: [
+          "Read minds",
+          "Time travel",
+          "Teleport anywhere",
+          "Become invisible"
+        ]
+      },
+      {
+        question: "When a problem appears, you...",
+        answers: [
+          "Find a solution quickly",
+          "Think about every option",
+          "Ask someone for help",
+          "Take a break first"
+        ]
+      },
+      {
+        question: "Choose your perfect evening.",
+        answers: [
+          "Hanging out with friends",
+          "Gaming or watching shows",
+          "Making something cool",
+          "Doing absolutely nothing"
+        ]
+      }
+    ];
+
+    const personalityTypes = [
+      {
+        name: "The Social One",
+        emoji: "👥",
+        description:
+          "You enjoy good company and shared experiences. You bring energy to a room and usually appreciate having people around."
+      },
+      {
+        name: "The Chill One",
+        emoji: "😎",
+        description:
+          "You know how to take it easy. You appreciate your own space and don't think every little thing needs to become a big deal."
+      },
+      {
+        name: "The Creative One",
+        emoji: "🎨",
+        description:
+          "You enjoy exploring ideas and doing things your own way. Ordinary things can become interesting when you get creative."
+      },
+      {
+        name: "The Wild Card",
+        emoji: "🃏",
+        description:
+          "You're flexible, curious, and hard to predict. You like having options and seeing where life takes you."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answersChosen = [];
+
+    const questionElement = document.getElementById("question");
+    const subtitleElement = document.getElementById("subtitle");
+    const answersElement = document.getElementById("answers");
+    const progressElement = document.getElementById("progress");
+    const emojiElement = document.getElementById("emoji");
+    const startButton = document.getElementById("startBtn");
+    const restartButton = document.getElementById("restartBtn");
+
+    function startQuiz() {
+      currentQuestion = 0;
+      answersChosen = [];
+
+      startButton.hidden = true;
+      restartButton.hidden = true;
+
+      subtitleElement.textContent =
+        "Choose the answer that feels most like you.";
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const question = questions[currentQuestion];
+
+      questionElement.textContent = question.question;
+
+      progressElement.textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+      emojiElement.textContent = "?";
+      answersElement.innerHTML = "";
+
+      question.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+
+        button.className = "answer-button";
+        button.textContent = answer;
+
+        button.addEventListener("click", function () {
+          answersChosen.push(index);
+          currentQuestion++;
+
+          if (currentQuestion < questions.length) {
+            showQuestion();
+          } else {
+            showResult();
+          }
+        });
+
+        answersElement.appendChild(button);
+      });
+    }
+
+    function showResult() {
+      const totals = [0, 0, 0, 0];
+
+      answersChosen.forEach((answer) => {
+        totals[answer]++;
+      });
+
+      let highestIndex = 0;
+
+      for (let i = 1; i < totals.length; i++) {
+        if (totals[i] > totals[highestIndex]) {
+          highestIndex = i;
+        }
+      }
+
+      const result = personalityTypes[highestIndex];
+
+      emojiElement.textContent = result.emoji;
+      progressElement.textContent = "QUIZ COMPLETE";
+      questionElement.textContent = result.name;
+      subtitleElement.textContent = result.description;
+
+      answersElement.innerHTML = "";
+
+      const note = document.createElement("p");
+      note.className = "result-note";
+      note.textContent =
+        "Just for fun — you're more than one quiz result!";
+
+      answersElement.appendChild(note);
+
+      restartButton.hidden = false;
+    }
+  </script>
+
+</body>
+</html>
